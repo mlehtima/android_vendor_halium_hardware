@@ -149,7 +149,7 @@ static char * out_get_parameters(const struct audio_stream *stream, const char *
     String8 values;
 
     out->streamIface->getParameters(paramKeys, &values);
-    return strdup(values.string());
+    return strdup(values.c_str());
 }
 
 static uint32_t out_get_latency(const struct audio_stream_out *stream)
@@ -330,7 +330,7 @@ static char * in_get_parameters(const struct audio_stream *stream,
     String8 values;
 
     in->streamIface->getParameters(paramKeys, &values);
-    return strdup(values.string());
+    return strdup(values.c_str());
 }
 
 static int in_set_gain(struct audio_stream_in *stream, float gain)
@@ -461,7 +461,7 @@ static char * adev_get_parameters(const struct audio_hw_device *dev,
     String8 values;
 
     adev->deviceIface->getParameters(paramKeys, &values);
-    return strdup(values.string());
+    return strdup(values.c_str());
 }
 
 static int adev_init_check(const struct audio_hw_device *dev)
@@ -542,8 +542,10 @@ static size_t adev_get_input_buffer_size(const struct audio_hw_device *dev,
 {
     struct wrapper_audio_device *adev = (struct wrapper_audio_device *)dev;
     size_t buffer_size = 0;
+    struct audio_config conf;
+    conf = *config;
 
-    adev->deviceIface->getInputBufferSize(config, &buffer_size);
+    adev->deviceIface->getInputBufferSize(&conf, &buffer_size);
 
     ALOGV("adev_get_input_buffer_size: %zu", buffer_size);
     return buffer_size;
